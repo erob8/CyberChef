@@ -39,8 +39,41 @@ class ToBase32 extends Operation {
      * @returns {string}
      */
     run(input, args) {
+	console.log('hi');
+	console.log(input);
+	console.log(args);
         if (!input) return "";
         input = new Uint8Array(input);
+	console.log(input);
+	if (input.length === 40) {
+		const toStr = Utils.byteArrayToChars(input).toUpperCase();
+		console.log(toStr);
+		const sha1Regex = new RegExp("^[A-Fa-f0-9]{40}$");
+		if (sha1Regex.test(toStr) === true) {
+			console.log('sha1 regex match');
+			const b32Map = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','2','3','4','5','6','7'];
+			console.log(b32Map);
+			let binary = "";
+			for (const c of toStr) {
+				const binRep = parseInt(c, 16).toString(2).padStart(4, '0');
+				console.log('binary rep of ' + c + ' is ' + binRep);
+				binary += binRep;
+			}
+			console.log(binary);
+			let b32 = "";
+			for(let i = 0; i < binary.length; i+=5) {
+				const slice = binary.slice(i, i+5);
+				const toB32 = b32Map[parseInt(slice,2)];
+				console.log(slice + '  converted to b32 val of ' + toB32);
+				b32 += toB32;
+			}
+			console.log(b32);
+			return b32;
+		}
+		else {
+			console.log('not a sha1 regex match.');
+		}
+	}
 
         const alphabet = args[0] ? Utils.expandAlphRange(args[0]).join("") : "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567=";
         let output = "",
